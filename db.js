@@ -1,10 +1,10 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-  host: "W]u@,^=7DX^i",
+  dbname: "ecis_smartex",
   user: "ecis_smaruser",
   host: "localhost",
-  password: "ecis_smartex",
+  password: "W]u@,^=7DX^i",
 });
 
 db.connect((err) => {
