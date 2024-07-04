@@ -5,7 +5,7 @@ export const db = mysql.createConnection({
   user: "admin",
   port: 3306,
   password: "PSOODqb96lduXDRjCizX",
-  database: "live-smartex"
+  database: "smartex"
 });
 
 db.connect((err) => {
