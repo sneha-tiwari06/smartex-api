@@ -3,7 +3,7 @@ import mysql from "mysql";
 export const db = mysql.createConnection({
   dbname: "ecis_smartex",
   user: "ecis_smaruser",
-  host: "localhost",
+  host: "97.74.83.23",
   password: "W]u@,^=7DX^i",
 });
 
