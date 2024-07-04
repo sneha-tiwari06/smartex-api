@@ -1,10 +1,11 @@
 import mysql from "mysql";
 
 export const db = mysql.createConnection({
-  dbname: "ecis_smartex",
-  user: "ecis_smaruser",
-  host: "97.74.83.23",
-  password: "W]u@,^=7DX^i",
+  host: "smartex.cluster-czysu0somdb2.eu-north-1.rds.amazonaws.com",
+  user: "admin",
+  port: 3306,
+  password: "PSOODqb96lduXDRjCizX",
+  database: "live-smartex"
 });
 
 db.connect((err) => {
