@@ -22,23 +22,19 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
-    const allowedOrigins = ['https://ecis.in', 'http://localhost:3000'];
-    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    callback(null, origin); 
   },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
+
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/admin-smartex/upload");
+    cb(null, "../client/public/upload");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
