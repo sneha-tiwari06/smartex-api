@@ -1,6 +1,5 @@
 import { db } from "../db.js";
 import bcrypt from "bcryptjs";
-import { configDotenv } from "dotenv";
 import jwt from "jsonwebtoken";
 
 export const register = (req, res) => {

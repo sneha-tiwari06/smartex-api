@@ -21,9 +21,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const corsOptions = {
-  origin: function (origin, callback) {
-    callback(null, origin); 
-  },
+  origin: "https://ecis.in/admin-smartex/",
   credentials: true,
 };
 
