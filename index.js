@@ -22,17 +22,17 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
-    callback(null, origin); 
+    const allowedOrigins = ['https://ecis.in', 'http://localhost:3000'];
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
   },
-  credentials: true, 
+  credentials: true,
 };
 
-app.use(cors({
-  origin: 'https://ecis.in',
-  methods: 'GET,POST,PUT,DELETE',
-  credentials: true,
-}));
-
+app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
