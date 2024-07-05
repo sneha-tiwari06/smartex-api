@@ -21,7 +21,7 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const corsOptions = {
-  origin: "https://live-server-bh9y.onrender.com",
+  origin: "https://ecis.in",
   credentials: true,
 };
 
