@@ -27,7 +27,11 @@ const corsOptions = {
   credentials: true, 
 };
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: 'https://ecis.in',
+  methods: 'GET,POST,PUT,DELETE',
+  credentials: true,
+}));
 
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
