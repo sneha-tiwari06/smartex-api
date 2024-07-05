@@ -22,9 +22,9 @@ const __dirname = path.dirname(__filename);
 const app = express();
 const corsOptions = {
   origin: function (origin, callback) {
-    callback(null, origin); // Allow all origins
+    callback(null, origin); 
   },
-  credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));
@@ -34,7 +34,7 @@ app.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "../client/public/upload");
+    cb(null, "/admin-smartex/upload");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
