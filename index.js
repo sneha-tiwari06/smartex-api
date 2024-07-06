@@ -20,15 +20,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const cors = require('cors');
-
 const corsOptions = {
   origin: ["https://ecis.in", "https://live-server-bh9y.onrender.com"],
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-
 
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
