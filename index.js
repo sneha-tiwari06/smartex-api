@@ -42,7 +42,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 // app.post("/api/upload", upload.array("files", 10), function (req, res) {
-app.post("/api/upload", upload.single("file"), function (req, res) {
+app.post("/admin-smartex/upload", upload.single("file"), function (req, res) {
   const file = req.file;
   res.status(200).json(file.filename);
 });
@@ -50,7 +50,7 @@ app.post("/api/upload", upload.single("file"), function (req, res) {
 
 
 
-app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
+app.post('/admin-smartex/multiupload', upload.array('files', 100), (req, res) => {
   try {
     const files = req.files;
     const fileUrls = files.map(file => file.filename);
