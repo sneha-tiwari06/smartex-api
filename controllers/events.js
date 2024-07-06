@@ -24,11 +24,6 @@ export const getEvent = (req, res) => {
 
 export const addEvent = async (req, res) => {
   try {
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated!");
-
-    const userInfo = await jwt.verify(token, "jwtkey");
-    if (!userInfo) return res.status(403).json("Token is not valid!");
 
     const { meta_title, meta_key, meta_desc, event_name, event_date, img} = req.body;
 
@@ -51,11 +46,6 @@ export const addEvent = async (req, res) => {
 
 
 export const deleteEvent = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
-
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
 
     const postId = req.params.id;
     const q = "DELETE FROM events WHERE `id` = ? ";
@@ -65,15 +55,10 @@ export const deleteEvent = (req, res) => {
 
       return res.json("Post has been deleted!");
     });
-  });
+
 };
 export const updateEvent = (req, res) => {
   try {
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated!");
-
-    jwt.verify(token, "jwtkey", (err, userInfo) => {
-      if (err) return res.status(403).json("Token is not valid!");
 
       const { meta_title, meta_key, meta_desc, event_name, event_date, img, active } = req.body;
       // console.log(req.body)
@@ -105,7 +90,7 @@ export const updateEvent = (req, res) => {
         if (err) return res.status(500).json(err);
         return res.json("Post has been updated.");
       });
-    });
+
   } catch (error) {
     return res.status(400).json(error.message);
   }

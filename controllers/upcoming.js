@@ -24,11 +24,6 @@ export const getUpcoming = (req, res) => {
 
 export const addUpcoming = async (req, res) => {
   try {
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated!");
-
-    const userInfo = await jwt.verify(token, "jwtkey");
-    if (!userInfo) return res.status(403).json("Token is not valid!");
 
     const { title, alt, img} = req.body;
 
@@ -51,28 +46,18 @@ export const addUpcoming = async (req, res) => {
 
 
 export const deleteUpcoming = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
-
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
 
     const postId = req.params.id;
     const q = "DELETE FROM upcoming_events WHERE `id` = ? ";
 
-    db.query(q, [postId, userInfo.id], (err, data) => {
+    db.query(q, [postId], (err, data) => {
       if (err) return res.status(403).json("You can delete only your post!");
 
       return res.json("Post has been deleted!");
     });
-  });
-};export const updateUpcoming = (req, res) => {
+  };
+export const updateUpcoming = (req, res) => {
   try {
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated!");
-
-    jwt.verify(token, "jwtkey", (err, userInfo) => {
-      if (err) return res.status(403).json("Token is not valid!");
 
       const { title, alt, img, active } = req.body;
       const postId = req.params.id;
@@ -102,7 +87,7 @@ export const deleteUpcoming = (req, res) => {
         if (err) return res.status(500).json(err);
         return res.json("Post has been updated.");
       });
-    });
+    
   } catch (error) {
     return res.status(400).json(error.message);
   }

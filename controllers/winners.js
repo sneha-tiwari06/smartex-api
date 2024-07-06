@@ -46,60 +46,51 @@ export const addWinners = async (req, res) => {
 
 
 export const deleteWinners = (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) return res.status(401).json("Not authenticated!");
+  const postId = req.params.id;
+  const q = "DELETE FROM winners WHERE `id` = ?";
 
-  jwt.verify(token, "jwtkey", (err, userInfo) => {
-    if (err) return res.status(403).json("Token is not valid!");
+  db.query(q, [postId], (err, data) => {
+    if (err) return res.status(403).json("You can delete only your post!");
 
-    const postId = req.params.id;
-    const q = "DELETE FROM winners WHERE `id` = ? ";
-
-    db.query(q, [postId, userInfo.id], (err, data) => {
-      if (err) return res.status(403).json("You can delete only your post!");
-
-      return res.json("Post has been deleted!");
-    });
+    return res.json("Post has been deleted!");
   });
 };
+
 export const updateWinners = (req, res) => {
   try {
-    const token = req.cookies.access_token;
-    if (!token) return res.status(401).json("Not authenticated!");
+    const { title, date, img, alt_tag, active } = req.body;
+    const postId = req.params.id;
 
-    jwt.verify(token, "jwtkey", (err, userInfo) => {
-      if (err) return res.status(403).json("Token is not valid!");
+    let q;
+    let values = [];
 
-      const { title, date, img, alt_tag, active } = req.body;
-      const postId = req.params.id;
+    
+    if (active === false || active === true) {
+      q = "UPDATE winners SET active = ? WHERE id = ?";
+      values = [active, postId];
+    } else {
+     
+      q = "UPDATE winners SET `title`=?, `date`=?, `img`=?, `alt_tag`=?, `active`=? WHERE `id` = ?";
+      values = [
+        title,
+        date,
+        img,
+        alt_tag,
+        active !== undefined ? active : true,
+        postId
+      ].filter(value => value !== undefined && value !== null && value !== '');
+    }
 
-      let q;
-      let values;
-
-      if (active === false) {
-        q = "UPDATE winners SET active = ? WHERE id = ?";
-        values = [false, postId];
-      } else if (active === true) {
-        q = "UPDATE winners SET active = ? WHERE id = ?";
-        values = [true, postId];
-      } else {
-        q = "UPDATE winners SET `title`=?, `date`=?, `img`=?, `alt_tag`=?, `active`=? WHERE `id` = ?";
-        values = [
-          title,
-          date,
-          img,
-          alt_tag,
-          true, 
-          postId
-        ].filter(value => value !== undefined && value !== null && value !== '');
+    db.query(q, values, (err, data) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Failed to update winner." });
       }
-
-      db.query(q, values, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("Winner has been updated.");
-      });
+      return res.json("Winner has been updated.");
     });
   } catch (error) {
-    return res.status(400).json(error.message);
+    console.error(error);
+    return res.status(400).json({ error: error.message });
   }
 };
+
