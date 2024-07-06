@@ -1,6 +1,4 @@
 import { db } from "../db.js";
-import jwt from "jsonwebtoken";
-
 export const getEvents = (req, res) => {
   const q = "SELECT * FROM events order by created_at DESC";
 
@@ -50,7 +48,7 @@ export const deleteEvent = (req, res) => {
     const postId = req.params.id;
     const q = "DELETE FROM events WHERE `id` = ? ";
 
-    db.query(q, [postId, userInfo.id], (err, data) => {
+    db.query(q, [postId], (err, data) => {
       if (err) return res.status(403).json("You can delete only your post!");
 
       return res.json("Post has been deleted!");

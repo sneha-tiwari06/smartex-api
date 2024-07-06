@@ -27,10 +27,6 @@ export const addWinners = async (req, res) => {
 
     const { title, date, img, alt_tag} = req.body;
 
-    // if (!title || !date || !img || !alt_tag ) {
-    //   return res.status(400).json("All fields are required!");
-    // }
-
     const q = "INSERT INTO winners(`title`, `date`, `img`, `alt_tag`) VALUES (?)";
     const values = [title, date, img, alt_tag];
 

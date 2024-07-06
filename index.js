@@ -34,14 +34,14 @@ app.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/upload");
+    cb(null, "../client/public/upload");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
   },
 });
 const upload = multer({ storage });
-// app.post("/api/upload", upload.array("files", 10), function (req, res) {
+// app.post("/api/upload", upload.array("files", 10), function (req, res) { 
 app.post("/api/upload", upload.single("file"), function (req, res) {
   const file = req.file;
   res.status(200).json(file.filename);
@@ -61,7 +61,7 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
 });
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, '/upload', filename);
+  const filePath = path.join(__dirname, '../client/public/upload', filename);
 
   fs.unlink(filePath, (err) => {
     if (err) {
