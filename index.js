@@ -35,7 +35,7 @@ app.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "../client/public/upload");
+    cb(null, "/admin-smartex/upload");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
@@ -62,7 +62,7 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
 });
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, '../client/public/upload', filename);
+  const filePath = path.join(__dirname, '/admin-smartex/upload', filename);
 
   fs.unlink(filePath, (err) => {
     if (err) {
@@ -75,7 +75,6 @@ app.put('/posts/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const updatedData = req.body;
-    // Find the post by ID and update its data
     const post = await post.findByIdAndUpdate(id, updatedData, { new: true });
     res.status(200).json(post);
   } catch (err) {
