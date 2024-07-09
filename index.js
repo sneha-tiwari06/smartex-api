@@ -14,6 +14,7 @@ import partnersRoutes from "./routes/partners.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
+import cloudinary from 'cloudinary';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,9 +46,20 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage });
 
-app.post("/api/upload", upload.single("file"), function (req, res) {
-  const file = req.file;
-  res.status(200).json(file.filename);
+// Cloudinary configuration
+cloudinary.config({
+  cloud_name: 'domohk32n',
+  api_key: '672333377343499',
+  api_secret: 'KGnjzBLhC_tBbPw_LMYrNQ78H-4'
+});
+app.post("/api/upload", upload.single("file"), async function (req, res) {
+  try {
+    const result = await cloudinary.uploader.upload(req.file.path); // Upload file to Cloudinary
+    res.status(200).json({ secure_url: result.secure_url }); // Return secure URL of the uploaded file
+  } catch (err) {
+    console.error("Error uploading image to Cloudinary: ", err);
+    res.status(500).json({ error: 'Failed to upload file' });
+  }
 });
 
 app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
