@@ -1,5 +1,6 @@
 import { db } from "../db.js";
 
+// Fetch all posts or only active ones based on the showAll query parameter
 export const getPosts = (req, res) => {
   const showAll = req.query.showAll;
   const query = showAll
@@ -12,25 +13,22 @@ export const getPosts = (req, res) => {
   });
 };
 
-
-
-
+// Fetch a single post by ID
 export const getPost = (req, res) => {
   const q =
-    "SELECT p.id, `username`, `title`, `desc`, p.img, u.img AS userImg, `cat`,`date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title` FROM users u JOIN posts p ON u.id = p.uid WHERE p.id = ? ";
+    "SELECT p.id, `title`, `desc`, p.img, u.img AS userImg, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title` FROM posts WHERE p.id = ? ";
 
   db.query(q, [req.params.id], (err, data) => {
     if (err) return res.status(500).json(err);
-
     return res.status(200).json(data[0]);
   });
 };
 
+// Add a new post
 export const addPost = async (req, res) => {
   try {
-
     const q =
-      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `uid`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title`) VALUES (?)";
+      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title`) VALUES (?)";
 
     const values = [
       req.body.title,
@@ -38,7 +36,6 @@ export const addPost = async (req, res) => {
       req.body.img,
       req.body.cat,
       req.body.date,
-      userInfo.id,
       req.body.meta_title,
       req.body.meta_keywords,
       req.body.meta_desc,
@@ -48,7 +45,6 @@ export const addPost = async (req, res) => {
     ];
 
     db.query(q, [values], (err, data) => {
-     
       if (err) return res.status(500).json(err);
       return res.json("Post has been created.");
     });
@@ -57,24 +53,47 @@ export const addPost = async (req, res) => {
   }
 };
 
-
+// Delete a post by ID
 export const deletePost = (req, res) => {
+  const postId = req.params.id;
+  const q = "DELETE FROM posts WHERE `id` = ?";
 
-    const postId = req.params.id;
-    const q = "DELETE FROM posts WHERE `id` = ? AND `uid` = ?";
-
-    db.query(q, [postId], (err, data) => {
-      if (err) return res.status(403).json("You can delete only your post!");
-
-      return res.json("Post has been deleted!");
-    });
-
+  db.query(q, [postId], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.json("Post has been deleted!");
+  });
 };
+
+// Update a post by ID
 export const updatePost = (req, res) => {
   try {
+    const postId = req.params.id;
+    const {
+      title,
+      desc,
+      img,
+      cat,
+      meta_title,
+      meta_keywords,
+      meta_desc,
+      blog_by,
+      blog_date,
+      blog_image_title,
+      active
+    } = req.body;
 
-      const postId = req.params.id;
-      const {
+    let q;
+    let values;
+
+    if (active === false) {
+      q = "UPDATE posts SET active = ? WHERE id = ?";
+      values = [false, postId];
+    } else if (active === true) {
+      q = "UPDATE posts SET active = ? WHERE id = ?";
+      values = [true, postId];
+    } else {
+      q = "UPDATE posts SET `title`=?, `desc`=?, `img`=?, `cat`=?, `meta_title`=?, `meta_keywords`=?, `meta_desc`=?, `blog_by`=?, `blog_date`=?, `blog_image_title`=?, `active`=? WHERE `id` = ?";
+      values = [
         title,
         desc,
         img,
@@ -85,41 +104,15 @@ export const updatePost = (req, res) => {
         blog_by,
         blog_date,
         blog_image_title,
-        active
-      } = req.body;
+        true, // default to true if active is not explicitly set to true or false
+        postId,
+      ];
+    }
 
-      let q;
-      let values;
-
-      if (active === false) {
-        q = "UPDATE posts SET active = ? WHERE id = ? AND uid = ?";
-        values = [false, postId];
-      } else if (active === true) {
-        q = "UPDATE posts SET active = ? WHERE id = ? AND uid = ?";
-        values = [true, postId];
-      } else {
-        q = "UPDATE posts SET `title`=?, `desc`=?, `img`=?, `cat`=?, `meta_title`=?, `meta_keywords`=?, `meta_desc`=?, `blog_by`=?, `blog_date`=?, `blog_image_title`=?, `active`=? WHERE `id` = ? AND `uid` = ?";
-        values = [
-          title,
-          desc,
-          img,
-          cat,
-          meta_title,
-          meta_keywords,
-          meta_desc,
-          blog_by,
-          blog_date,
-          blog_image_title,
-          true, // default to true if active is not explicitly set to true or false
-          postId,
-        ];
-      }
-
-      db.query(q, values, (err, data) => {
-        if (err) return res.status(500).json(err);
-        return res.json("Post has been updated.");
-      });
-  
+    db.query(q, values, (err, data) => {
+      if (err) return res.status(500).json(err);
+      return res.json("Post has been updated.");
+    });
   } catch (error) {
     return res.status(400).json(error.message);
   }
