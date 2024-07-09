@@ -14,11 +14,7 @@ import partnersRoutes from "./routes/partners.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
-import { v2 as cloudinary } from 'cloudinary';
-import { CloudinaryStorage } from 'multer-storage-cloudinary';
-import dotenv from 'dotenv';
 
-dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,17 +32,14 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-const storage = new CloudinaryStorage({
-  cloudinary: cloudinary,
-  params: {
-    folder: 'uploads',
-    format: async (req, file) => 'webp', // supports promises as well
-    public_id: (req, file) => Date.now() + '-' + file.originalname,
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "admin-smartex/upload");
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + "-" + file.originalname);
   },
 });
 const upload = multer({ storage });
@@ -68,14 +61,16 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
     res.status(500).json({ error: 'Failed to upload files' });
   }
 });
-app.delete('/api/delete/:filename', async (req, res) => {
+app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
-  try {
-    await cloudinary.uploader.destroy(filename);
+  const filePath = path.join(__dirname, 'admin-smartex/upload', filename);
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      return res.status(500).json({ error: 'Error deleting file' });
+    }
     res.status(200).json({ message: 'File deleted successfully' });
-  } catch (err) {
-    res.status(500).json({ error: 'Error deleting file' });
-  }
+  });
 });
 app.put('/posts/:id', async (req, res) => {
   try {
