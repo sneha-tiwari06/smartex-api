@@ -33,20 +33,11 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    const uploadDir = path.join(__dirname, 'upload');
-    fs.mkdirSync(uploadDir, { recursive: true });
-    cb(null, uploadDir);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname);
-  },
+const upload = multer({
+  storage: multer.memoryStorage(), // Store files in memory to upload to Cloudinary
 });
 
-const upload = multer({ storage });
 
-// Cloudinary configuration
 cloudinary.config({
   cloud_name: 'domohk32n',
   api_key: '672333377343499',
