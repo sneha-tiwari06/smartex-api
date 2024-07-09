@@ -38,7 +38,6 @@ export const addPost = async (req, res) => {
       req.body.img,
       req.body.cat,
       req.body.date,
-      userInfo.id,
       req.body.meta_title,
       req.body.meta_keywords,
       req.body.meta_desc,
@@ -93,10 +92,10 @@ export const updatePost = (req, res) => {
 
       if (active === false) {
         q = "UPDATE posts SET active = ? WHERE id = ? AND uid = ?";
-        values = [false, postId, userInfo.id];
+        values = [false, postId];
       } else if (active === true) {
         q = "UPDATE posts SET active = ? WHERE id = ? AND uid = ?";
-        values = [true, postId, userInfo.id];
+        values = [true, postId];
       } else {
         q = "UPDATE posts SET `title`=?, `desc`=?, `img`=?, `cat`=?, `meta_title`=?, `meta_keywords`=?, `meta_desc`=?, `blog_by`=?, `blog_date`=?, `blog_image_title`=?, `active`=? WHERE `id` = ? AND `uid` = ?";
         values = [
@@ -112,7 +111,6 @@ export const updatePost = (req, res) => {
           blog_image_title,
           true, // default to true if active is not explicitly set to true or false
           postId,
-          userInfo.id
         ];
       }
 
