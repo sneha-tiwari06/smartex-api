@@ -16,7 +16,7 @@ export const getSpeaker = (req, res) => {
   db.query(q, [req.params.id], (err, data) => {
     if (err) return res.status(500).json(err);
     return res.status(200).json(data[0]);
-  });
+  }); 
 };
 
 export const addSpeaker = async (req, res) => {
