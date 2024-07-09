@@ -32,11 +32,11 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-app.use('/admin-smartex/upload', express.static(path.join(__dirname, 'admin-smartex/upload')));
+// app.use('/admin-smartex/upload', express.static(path.join(__dirname, 'admin-smartex/upload')));
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "admin-smartex/upload"));
+    cb(null, path.join(__dirname, "/upload"));
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
@@ -63,7 +63,7 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
 });
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, 'admin-smartex/upload', filename);
+  const filePath = path.join(__dirname, '/upload', filename);
 
   fs.unlink(filePath, (err) => {
     if (err) {
