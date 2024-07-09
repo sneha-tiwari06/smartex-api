@@ -20,10 +20,14 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use(cors({
-  origin: "https://ecis.in/admin-smartex", // Replace with your actual frontend URL
+const corsOptions = {
+  origin: function (origin, callback) {
+    callback(null, origin); 
+  },
   credentials: true,
-}));
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
