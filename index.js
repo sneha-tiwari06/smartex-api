@@ -35,7 +35,7 @@ app.use(cookieParser());
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "/admin-smartex/upload");
+    cb(null, "/upload");
   },
   filename: function (req, file, cb) {
     cb(null, Date.now() + file.originalname);
@@ -62,7 +62,7 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
 });
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
-  const filePath = path.join(__dirname, '/admin-smartex/upload', filename);
+  const filePath = path.join(__dirname, '/upload', filename);
 
   fs.unlink(filePath, (err) => {
     if (err) {
