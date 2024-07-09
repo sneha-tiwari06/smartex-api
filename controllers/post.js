@@ -38,7 +38,6 @@ export const addPost = async (req, res) => {
       req.body.img,
       req.body.cat,
       req.body.date,
-      userInfo.id,
       req.body.meta_title,
       req.body.meta_keywords,
       req.body.meta_desc,
