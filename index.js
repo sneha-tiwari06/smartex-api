@@ -15,8 +15,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
 
-import dotenv from 'dotenv';
-dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -34,9 +33,7 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-const uploadPath = process.env.NODE_ENV === 'production'
-  ? path.join(__dirname, '../admin-smartex/upload')
-  : path.join(__dirname, '../client/public/upload');
+const uploadPath = path.join(__dirname, "../admin-smartex/upload");
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
