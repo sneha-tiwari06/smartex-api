@@ -87,7 +87,7 @@ app.put('/posts/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
+app.use('/uploads', express.static(uploadPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
