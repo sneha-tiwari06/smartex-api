@@ -55,16 +55,19 @@ app.post("/api/upload", upload.single("file"), function (req, res) {
 
 
 
-
 app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
   try {
     const files = req.files;
-    const fileUrls = files.map(file => file.filename);
+    const fileUrls = files.map(file => ({
+      filename: file.filename,
+      url: `${req.protocol}://${req.get('host')}/upload/${file.filename}`
+    }));
     res.json({ fileUrls });
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
   }
 });
+
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
   const filePath = path.join(uploadPath, filename);
