@@ -62,7 +62,7 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
     if (!files || files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
-    const fileUrls = files.map(file => ({ filename: file.filename, path: `/upload/${file.filename}` }));
+    const fileUrls = files.map(file => ({ filename: file.filename, path: `/uploads/${file.filename}` }));
     res.json({ fileUrls });  
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
