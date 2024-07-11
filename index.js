@@ -14,6 +14,7 @@ import partnersRoutes from "./routes/partners.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import { cloudinary } from './cloudinary.config.js';
 
 
@@ -48,7 +49,15 @@ app.use(cookieParser());
 //     cb(null, Date.now() + file.originalname);
 //   },
 // });
-const upload = multer({ storage: multer.memoryStorage() });
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "uploads", // Replace with your folder name in Cloudinary
+    format: async (req, file) => "webp", // Supports promises as well
+    public_id: (req, file) => file.originalname,
+  },
+});
+const upload = multer({ storage: storage });
 app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.file.path);
