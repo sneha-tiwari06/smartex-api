@@ -33,8 +33,8 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-const uploadPath = path.join(__dirname, "admin-smartex", "upload");
-console.log("Upload path:", uploadPath);
+const uploadPath = path.join(__dirname, '../admin-smartex/upload');
+// console.log("Upload path:", uploadPath);
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
@@ -62,8 +62,8 @@ app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
     if (!files || files.length === 0) {
       return res.status(400).json({ error: 'No files uploaded' });
     }
-    const fileUrls = files.map(file => ({ filename: file.filename, path: file.path }));
-    res.json({ fileUrls });
+    const fileUrls = files.map(file => ({ filename: file.filename, path: `/upload/${file.filename}` }));
+    res.json({ fileUrls });  
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
   }
