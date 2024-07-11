@@ -14,7 +14,8 @@ import partnersRoutes from "./routes/partners.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
-import cloudinary from './cloudinary.config.js';
+import { cloudinary } from './cloudinary.config.js';
+
 
 
 const __filename = fileURLToPath(import.meta.url);
