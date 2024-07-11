@@ -20,7 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-
+const cloudinary = require('./cloudinary.config');
 const corsOptions = {
   origin: function (origin, callback) {
     callback(null, origin); 
@@ -33,37 +33,39 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-const uploadPath = path.join(__dirname, '../admin-smartex/upload');
-console.log("Upload path:", uploadPath);
-if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
-}
+// const uploadPath = path.join(__dirname, '../admin-smartex/upload');
+// console.log("Upload path:", uploadPath);
+// if (!fs.existsSync(uploadPath)) {
+//   fs.mkdirSync(uploadPath, { recursive: true });
+// }
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, uploadPath);
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + file.originalname);
-  },
-});
-const upload = multer({ storage });
-app.post("/api/upload", upload.single("file"), function (req, res) {
-   const file = req.file;
-   console.log("Uploaded file:", file);
-   res.status(200).json(file.filename);
-});
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, uploadPath);
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + file.originalname);
+//   },
+// });
 
-
-
-app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
+app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
-    const files = req.files;
-    if (!files || files.length === 0) {
-      return res.status(400).json({ error: 'No files uploaded' });
-    }
-    const fileUrls = files.map(file => ({ filename: file.filename, path: `/uploads/${file.filename}` }));
-    res.json({ fileUrls });  
+    const result = await cloudinary.uploader.upload(req.file.path);
+    res.status(200).json({ url: result.secure_url }); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Upload failed" });
+  }
+});
+
+
+
+app.post('/api/multiupload', upload.array('files', 100), async (req, res) => {
+  try {
+    const promises = req.files.map(file => cloudinary.uploader.upload(file.path));
+    const results = await Promise.all(promises);
+    const fileUrls = results.map(result => ({ url: result.secure_url }));
+    res.json({ fileUrls });
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
   }
@@ -105,7 +107,7 @@ app.put('/posts/:id', async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-app.use('/uploads', express.static(uploadPath));
+// app.use('/uploads', express.static(uploadPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
