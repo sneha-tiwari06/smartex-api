@@ -14,13 +14,13 @@ import partnersRoutes from "./routes/partners.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import multer from "multer";
+import cloudinary from './cloudinary.config.js';
 
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const cloudinary = require('./cloudinary.config');
 const corsOptions = {
   origin: function (origin, callback) {
     callback(null, origin); 
