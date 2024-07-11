@@ -34,7 +34,7 @@ app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
 const uploadPath = path.join(__dirname, '../admin-smartex/upload');
-// console.log("Upload path:", uploadPath);
+console.log("Upload path:", uploadPath);
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
