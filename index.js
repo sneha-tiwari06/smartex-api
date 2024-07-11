@@ -33,7 +33,8 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-const uploadPath = path.join(__dirname, "../admin-smartex/upload");
+const uploadPath = path.join(__dirname, "admin-smartex", "upload");
+console.log("Upload path:", uploadPath);
 if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
 }
@@ -58,13 +59,29 @@ app.post("/api/upload", upload.single("file"), function (req, res) {
 app.post('/api/multiupload', upload.array('files', 100), (req, res) => {
   try {
     const files = req.files;
-    const fileUrls = files.map(file => file.filename);
+    if (!files || files.length === 0) {
+      return res.status(400).json({ error: 'No files uploaded' });
+    }
+    const fileUrls = files.map(file => ({ filename: file.filename, path: file.path }));
     res.json({ fileUrls });
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
   }
 });
 
+// File deletion
+app.delete('/api/delete/:filename', (req, res) => {
+  const filename = req.params.filename;
+  const filePath = path.join(uploadPath, filename);
+
+  fs.unlink(filePath, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ error: 'Error deleting file' });
+    }
+    res.status(200).json({ message: 'File deleted successfully' });
+  });
+});
 
 app.delete('/api/delete/:filename', (req, res) => {
   const filename = req.params.filename;
