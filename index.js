@@ -48,7 +48,7 @@ app.use(cookieParser());
 //     cb(null, Date.now() + file.originalname);
 //   },
 // });
-
+const upload = multer({ storage: multer.memoryStorage() });
 app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.file.path);
