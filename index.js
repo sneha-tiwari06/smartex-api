@@ -48,7 +48,7 @@ const upload = multer({ storage: storage });
 app.post("/api/upload", upload.single("file"), async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.file.path);
-    res.status(200).json({ url: result.secure_url }); 
+    res.status(200).json({ url: result.secure_url, public_id: result.public_id }); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Upload failed" });
@@ -61,27 +61,33 @@ app.post('/api/multiupload', upload.array('files', 100), async (req, res) => {
   try {
     const promises = req.files.map(file => cloudinary.uploader.upload(file.path));
     const results = await Promise.all(promises);
-    const fileUrls = results.map(result => ({ url: result.secure_url }));
+    const fileUrls = results.map(result => ({ url: result.secure_url, public_id: result.public_id }));
     res.json({ fileUrls });
   } catch (err) {
     res.status(500).json({ error: 'Failed to upload files' });
   }
 });
+app.delete('/api/delete', async (req, res) => {
+  const { url } = req.body;
 
-// File deletion
-app.delete('/api/delete/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filePath = path.join(uploadPath, filename);
+  if (!url) {
+    return res.status(400).json({ error: 'URL is required' });
+  }
 
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error deleting file' });
+  const publicId = url.split('/').slice(-1)[0].split('.')[0]; 
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId);
+    if (result.result === "ok") {
+      res.status(200).json({ message: 'File deleted successfully' });
+    } else {
+      res.status(400).json({ error: 'Failed to delete file' });
     }
-    res.status(200).json({ message: 'File deleted successfully' });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Error deleting file' });
+  }
 });
-
 
 app.put('/posts/:id', async (req, res) => {
   try {
