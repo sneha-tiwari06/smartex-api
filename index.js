@@ -74,10 +74,12 @@ app.delete('/api/delete', async (req, res) => {
     return res.status(400).json({ error: 'URL is required' });
   }
 
-  const publicId = url.split('/').slice(-1)[0].split('.')[0]; 
+  const publicId = url.split('/').slice(-1)[0].split('.')[0]; // Extract the public ID from the URL
+  console.log(`Deleting file with public ID: ${publicId}`); // Debugging line
 
   try {
     const result = await cloudinary.uploader.destroy(publicId);
+    console.log(`Cloudinary delete result: ${JSON.stringify(result)}`); // Debugging line
     if (result.result === "ok") {
       res.status(200).json({ message: 'File deleted successfully' });
     } else {
@@ -88,6 +90,7 @@ app.delete('/api/delete', async (req, res) => {
     res.status(500).json({ error: 'Error deleting file' });
   }
 });
+
 
 app.put('/posts/:id', async (req, res) => {
   try {
