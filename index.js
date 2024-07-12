@@ -74,7 +74,7 @@ app.delete('/api/delete', async (req, res) => {
     return res.status(400).json({ error: 'URL is required' });
   }
 
-  const publicId = url.split('/').slice(-1)[0].split('.')[0];
+  const publicId = url.match(/\/([^/]+?)\.[a-z]{3,4}$/i)[1];
 
   try {
     const result = await cloudinary.uploader.destroy(publicId);
