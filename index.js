@@ -35,25 +35,12 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '100mb' }));
 app.use(cookieParser());
 
-// const uploadPath = path.join(__dirname, '../admin-smartex/upload');
-// console.log("Upload path:", uploadPath);
-// if (!fs.existsSync(uploadPath)) {
-//   fs.mkdirSync(uploadPath, { recursive: true });
-// }
 
-// const storage = multer.diskStorage({
-//   destination: function (req, file, cb) {
-//     cb(null, uploadPath);
-//   },
-//   filename: function (req, file, cb) {
-//     cb(null, Date.now() + file.originalname);
-//   },
-// });
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "uploads", // Replace with your folder name in Cloudinary
-    format: async (req, file) => "webp", // Supports promises as well
+    folder: "uploads",
+    format: async (req, file) => "webp",
     public_id: (req, file) => file.originalname,
   },
 });
@@ -95,18 +82,7 @@ app.delete('/api/delete/:filename', (req, res) => {
   });
 });
 
-app.delete('/api/delete/:filename', (req, res) => {
-  const filename = req.params.filename;
-  const filePath = path.join(uploadPath, filename);
 
-  fs.unlink(filePath, (err) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).json({ error: 'Error deleting file' });
-    }
-    res.status(200).json({ message: 'File deleted successfully' });
-  });
-});
 app.put('/posts/:id', async (req, res) => {
   try {
     const { id } = req.params;
