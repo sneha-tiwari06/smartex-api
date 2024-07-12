@@ -68,28 +68,36 @@ app.post('/api/multiupload', upload.array('files', 100), async (req, res) => {
   }
 });
 app.delete('/api/delete', async (req, res) => {
-  const { url } = req.body;
+  const { urls } = req.body;
 
-  if (!url) {
-    return res.status(400).json({ error: 'URL is required' });
+  if (!urls || !Array.isArray(urls)) {
+    return res.status(400).json({ error: 'URLs array is required' });
   }
 
-  const publicId = url.match(/\/([^/]+?)\.[a-z]{3,4}$/i)[1];
-
   try {
-    const result = await cloudinary.uploader.destroy(publicId);
-    console.log(`Cloudinary delete result: ${JSON.stringify(result)}`);
+    const deleteResults = await Promise.all(
+      urls.map(async (url) => {
+        const publicId = url.match(/\/([^/]+?)\.[a-z]{3,4}$/i)[1];
+        const result = await cloudinary.uploader.destroy(publicId);
+        console.log(`Cloudinary delete result for ${publicId}: ${JSON.stringify(result)}`);
+        return result;
+      })
+    );
 
-    if (result.result === "ok") {
-      res.status(200).json({ message: 'File deleted successfully' });
+    // Check if all deletions were successful
+    const allDeleted = deleteResults.every(result => result.result === 'ok');
+
+    if (allDeleted) {
+      res.status(200).json({ message: 'Files deleted successfully' });
     } else {
-      res.status(400).json({ error: 'Failed to delete file' });
+      res.status(400).json({ error: 'Failed to delete all files' });
     }
   } catch (err) {
     console.error('Cloudinary delete error:', err);
-    res.status(500).json({ error: 'Error deleting file' });
+    res.status(500).json({ error: 'Error deleting files' });
   }
 });
+
 
 
 
