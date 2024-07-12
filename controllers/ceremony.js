@@ -27,9 +27,6 @@ export const addCeremony = async (req, res) => {
 
     const { ceremony_name, ceremony_date, ceremony_link, img } = req.body;
 
-    // if (!ceremony_name || !ceremony_date || !ceremony_link  ) {
-    //   return res.status(400).json("All fields are required!");
-    // }
     console.log(req.body)
     const q = "INSERT INTO ceremony(`ceremony_name`, `ceremony_date`, `ceremony_link`, `image_url`) VALUES (?)";
     const values = [ceremony_name, ceremony_date, ceremony_link, img];

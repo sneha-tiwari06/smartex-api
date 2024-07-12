@@ -1,5 +1,4 @@
 import { db } from "../db.js";
-import jwt from "jsonwebtoken";
 
 export const getPartners = (req, res) => {
   const q = "SELECT * FROM partners order by created_at DESC";
@@ -26,7 +25,7 @@ export const addPartner = async (req, res) => {
 
     const { alt, image_urls } = req.body;
     const values = image_urls.map(image_url => [alt, image_url]);
-    const q = "INSERT INTO partners(`alt`, `image_url`) VALUES ?";
+    const q = "INSERT INTO partners(`alt`, `image_url`) VALUES (?)";
 
     db.query(q, [values], (err, data) => {
       if (err) return res.status(500).json(err);
