@@ -1,4 +1,5 @@
 import { db } from "../db.js";
+import jwt from "jsonwebtoken";
 
 export const getPartners = (req, res) => {
   const q = "SELECT * FROM partners order by created_at DESC";
@@ -23,9 +24,14 @@ export const getPartner = (req, res) => {
 export const addPartner = async (req, res) => {
   try {
 
-    const { alt, image_urls } = req.body;
+    const { alt, image_urls } = req.body; // Modify to receive an array of image URLs
+
+    if (!alt.trim() || !image_urls || !image_urls.length) {
+      return res.status(400).json("Alternate text and at least one image are required!");
+    }
+
     const values = image_urls.map(image_url => [alt, image_url]);
-    const q = "INSERT INTO partners(`alt`, `image_url`) VALUES (?)";
+    const q = "INSERT INTO partners(`alt`, `image_url`) VALUES ?";
 
     db.query(q, [values], (err, data) => {
       if (err) return res.status(500).json(err);
