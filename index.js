@@ -56,26 +56,14 @@ app.post("/api/upload", upload.single("file"), async (req, res) => {
 });
 
 
+
 app.post('/api/multiupload', upload.array('files', 100), async (req, res) => {
   try {
     const promises = req.files.map(file => cloudinary.uploader.upload(file.path));
     const results = await Promise.all(promises);
-
-    // Extract image URLs from Cloudinary response
-    const fileUrls = results.map(result => result.secure_url);
-
-    // Save image URLs (along with other data) to your database
-    const dataToSave = {
-      alt: req.body.alt, // Assuming alt text is sent from the frontend
-      image_urls: fileUrls,
-      // Add other necessary fields for your database schema
-    };
-
-    const savedData = await yourDatabaseModel.create(dataToSave); // Replace with your database interaction logic
-
-    res.json({ message: 'Files uploaded successfully!', savedData }); // Send confirmation and saved data
+    const fileUrls = results.map(result => ({ url: result.secure_url }));
+    res.json({ fileUrls });
   } catch (err) {
-    console.error(err);
     res.status(500).json({ error: 'Failed to upload files' });
   }
 });
