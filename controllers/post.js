@@ -26,6 +26,16 @@ export const getPost = (req, res) => {
   });
 };
 
+export const getPostBySlug = (req, res) => {
+  const q =
+    "SELECT id, `title`, `desc`, `img`, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title` FROM posts WHERE slug = ?";
+
+  db.query(q, [req.params.slug], (err, data) => {
+    if (err) return res.status(500).json(err);
+    return res.status(200).json(data[0]);
+  });
+};
+
 export const addPost = async (req, res) => {
   try {
     const slug = generateSlug(req.body.title);
