@@ -111,7 +111,6 @@ app.get('/posts/:slug', async (req, res) => {
   }
   res.json(post);
 });
-// app.use('/uploads', express.static(uploadPath));
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
