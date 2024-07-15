@@ -1,5 +1,5 @@
 import { db } from "../db.js";
-
+import { generateSlug } from "../utils/slug.js";
 export const getPosts = (req, res) => {
   const showAll = req.query.showAll;
   const query = showAll
@@ -30,7 +30,7 @@ export const addPost = async (req, res) => {
   try {
 
     const q =
-      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title`) VALUES (?)";
+      "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title`, `slug`) VALUES (?)";
 
     const values = [
       req.body.title,
@@ -43,7 +43,8 @@ export const addPost = async (req, res) => {
       req.body.meta_desc,
       req.body.blog_by,
       req.body.blog_date,
-      req.body.blog_image_title
+      req.body.blog_image_title,
+      slug
     ];
 
     db.query(q, [values], (err, data) => {
@@ -96,7 +97,10 @@ export const updatePost = (req, res) => {
       } else if (active === true) {
         q = "UPDATE posts SET active = ? WHERE id = ? ";
         values = [true, postId];
-      } else {
+      }else {
+        // Generate slug from title
+        const slug = generateSlug(title);
+        
         q = "UPDATE posts SET `title`=?, `desc`=?, `img`=?, `cat`=?, `meta_title`=?, `meta_keywords`=?, `meta_desc`=?, `blog_by`=?, `blog_date`=?, `blog_image_title`=?, `active`=? WHERE `id` = ? ";
         values = [
           title,
@@ -109,7 +113,8 @@ export const updatePost = (req, res) => {
           blog_by,
           blog_date,
           blog_image_title,
-          true, // default to true if active is not explicitly set to true or false
+          true, 
+          slug, 
           postId,
         ];
       }
