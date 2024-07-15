@@ -28,7 +28,7 @@ export const getPost = (req, res) => {
 
 export const addPost = async (req, res) => {
   try {
-
+    const slug = generateSlug(req.body.title);
     const q =
       "INSERT INTO posts(`title`, `desc`, `img`, `cat`, `date`, `meta_title`, `meta_keywords`, `meta_desc`, `blog_by`, `blog_date`, `blog_image_title`, `slug`) VALUES (?)";
 
