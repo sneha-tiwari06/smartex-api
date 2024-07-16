@@ -6,6 +6,7 @@ import authRoutes from "./routes/auth.js";
 import userRoutes from "./routes/users.js";
 import postRoutes from "./routes/posts.js";
 import starRoutes from "./routes/star.js";
+import draftRoutes from "./routes/draft-winners.js";
 import winnersRoutes from "./routes/winners.js";
 import ceremonyRoutes from "./routes/ceremony.js";
 import upcomingRoutes from "./routes/upcoming.js";
@@ -78,7 +79,7 @@ app.delete('/api/delete', async (req, res) => {
 
   try {
     const result = await cloudinary.uploader.destroy(publicId);
-    console.log(`Cloudinary delete result: ${JSON.stringify(result)}`);
+    // console.log(`Cloudinary delete result: ${JSON.stringify(result)}`);
 
     if (result.result === "ok") {
       res.status(200).json({ message: 'File deleted successfully' });
@@ -111,6 +112,7 @@ app.get('/posts/:slug', async (req, res) => {
   }
   res.json(post);
 });
+app.use("/api/drafts", draftRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/posts", postRoutes);
@@ -120,6 +122,7 @@ app.use("/api/ceremony", ceremonyRoutes);
 app.use("/api/event", eventRoutes);
 app.use("/api/upcoming", upcomingRoutes);
 app.use("/api/partners", partnersRoutes);
+
 
 app.listen(8800, () => {
   console.log("Connected!");
